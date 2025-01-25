@@ -6,7 +6,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import Shop from "./pages/Shop";
-import Cart from "./components/Cart";
+
 import { CartProvider } from "./contexts/CartContext";
 import theme from "./theme";
 
