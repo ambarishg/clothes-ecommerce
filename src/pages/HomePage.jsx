@@ -14,9 +14,9 @@ const products = [
 
 const HomePage = () => {
   return (
-    <Box py={8}>
+    <Box py={{ base: 4, md: 8 }}>
       <Container maxW="container.xl">
-        <Heading as="h2" size="xl" mb={8}>
+        <Heading as="h2" size={{ base: "lg", md: "xl" }} mb={6}>
           Featured Products
         </Heading>
         <ProductGrid products={products} />
@@ -26,4 +26,3 @@ const HomePage = () => {
 }
 
 export default HomePage
-
