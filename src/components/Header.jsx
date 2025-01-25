@@ -1,7 +1,12 @@
-import { Box, Flex, Heading, Spacer, Button } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
+// src/components/Header.jsx
 
-const Header = () => {
+import { Box, Flex, Heading, Spacer, Button } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+
+const Header = ({ onCartOpen }) => {
+  const { cart } = useCart();
+
   return (
     <Box as="header" bg="gray.100" py={4}>
       <Flex maxW="container.xl" mx="auto" px={4} alignItems="center">
@@ -10,7 +15,7 @@ const Header = () => {
         </Heading>
         <Spacer />
         <Flex as="nav" gap={4}>
-          <Button as={Link} to="/" variant="ghost">
+        <Button as={Link} to="/" variant="ghost">
             Home
           </Button>
           <Button as={Link} to="/shop" variant="ghost">
@@ -22,11 +27,13 @@ const Header = () => {
           <Button as={Link} to="/contact" variant="ghost">
             Contact
           </Button>
+          <Button variant="ghost" onClick={onCartOpen}>
+            Cart ({cart.length})
+          </Button>
         </Flex>
       </Flex>
     </Box>
-  )
-}
+  );
+};
 
-export default Header
-
+export default Header;
