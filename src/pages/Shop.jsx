@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { Box, Container, Heading, SimpleGrid, Select, Input, VStack, HStack, Text } from "@chakra-ui/react"
+import { useState } from "react"
+import { Box, Container,  SimpleGrid, Select, Input, VStack, HStack, Text } from "@chakra-ui/react"
 import ProductCard from "../components/ProductCard"
 
 // This would typically come from an API or database
@@ -44,7 +44,7 @@ const Shop = () => {
     const value = e.target.value.toLowerCase()
     setSearchTerm(value)
     const searchedProducts = allProducts.filter(
-      (product) => product.name.toLowerCase().includes(value) || product.category.toLowerCase().includes(value),
+      (product) => product.name.toLowerCase().includes(value)
     )
     setProducts(searchedProducts)
   }
@@ -59,14 +59,7 @@ const Shop = () => {
               <option value="name">Name</option>
               <option value="price">Price</option>
             </Select>
-            <Select placeholder="Filter by Category" value={filterCategory} onChange={handleFilter}>
-              <option value="">All Categories</option>
-              <option value="Tops">Tops</option>
-              <option value="Bottoms">Bottoms</option>
-              <option value="Dresses">Dresses</option>
-              <option value="Outerwear">Outerwear</option>
-              <option value="Shoes">Shoes</option>
-            </Select>
+            
             <Input placeholder="Search products" value={searchTerm} onChange={handleSearch} />
           </HStack>
           {products.length === 0 ? (
