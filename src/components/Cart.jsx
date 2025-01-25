@@ -1,62 +1,81 @@
-// src/contexts/CartContext.jsx
-import { createContext, useState, useContext, useMemo, useEffect } from "react";
+import React from "react"
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Button,
+  VStack,
+  HStack,
+  Text,
+  Image,
+  IconButton,
+  Input,
+} from "@chakra-ui/react"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
+import { useCart } from "../contexts/CartContext"
 
-const CartContext = createContext();
+const Cart = ({ isOpen, onClose }) => {
+  const { cart, removeFromCart, updateQuantity } = useCart()
 
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem('cart');
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
-  const addToCart = (product) => {
-    setCart((currentCart) => {
-      const existingItem = currentCart.find((item) => item.id === product.id);
-      if (existingItem) {
-        return currentCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...currentCart, { ...product, quantity: 1 }];
-    });
-  };
+  return (
+    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
+      <DrawerOverlay />
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader>Your Cart</DrawerHeader>
 
-  const removeFromCart = (productId) => {
-    setCart((currentCart) => currentCart.filter((item) => item.id !== productId));
-  };
+        <DrawerBody>
+          <VStack spacing={4} align="stretch">
+            {cart.map((item) => (
+              <HStack key={item.id} justify="space-between">
+                <Image src={item.image || "/placeholder.svg"} alt={item.name} boxSize="50px" objectFit="cover" />
+                <VStack align="start" flex={1}>
+                  <Text fontWeight="bold">{item.name}</Text>
+                  <Text>${item.price.toFixed(2)}</Text>
+                </VStack>
+                <HStack>
+                  <IconButton
+                    icon={<MinusIcon />}
+                    onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                    size="sm"
+                  />
+                  <Input
+                    value={item.quantity}
+                    onChange={(e) => updateQuantity(item.id, Number.parseInt(e.target.value) || 0)}
+                    width="50px"
+                    textAlign="center"
+                  />
+                  <IconButton icon={<AddIcon />} onClick={() => updateQuantity(item.id, item.quantity + 1)} size="sm" />
+                </HStack>
+                <Button onClick={() => removeFromCart(item.id)} colorScheme="red" size="sm">
+                  Remove
+                </Button>
+              </HStack>
+            ))}
+          </VStack>
+        </DrawerBody>
 
-  const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) return; // Prevent setting quantity below 1
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.id === productId ? { ...item, quantity: quantity } : item
-      )
-    );
-  };
+        <DrawerFooter>
+          <VStack width="100%" align="stretch">
+            <HStack justify="space-between">
+              <Text fontWeight="bold">Total:</Text>
+              <Text fontWeight="bold">${total.toFixed(2)}</Text>
+            </HStack>
+            <Button colorScheme="blue" width="100%">
+              Checkout
+            </Button>
+          </VStack>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}
 
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const value = useMemo(
-    () => ({
-      cart,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-    }),
-    [cart]
-  );
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-};
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
-};
-
+export default Cart
 
