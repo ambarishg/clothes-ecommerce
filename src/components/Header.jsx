@@ -29,12 +29,7 @@ const Header = ({ onCartOpen }) => {
           <Button as={Link} to="/shop" variant="ghost">
             Shop
           </Button>
-          <Button as={Link} to="/about" variant="ghost">
-            About
-          </Button>
-          <Button as={Link} to="/contact" variant="ghost">
-            Contact
-          </Button>
+          
           <Button variant="ghost" onClick={onCartOpen}>
             Cart ({cart.length})
           </Button>

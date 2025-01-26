@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Drawer,
   DrawerBody,
@@ -14,14 +14,54 @@ import {
   Image,
   IconButton,
   Input,
-} from "@chakra-ui/react"
-import { AddIcon, MinusIcon } from "@chakra-ui/icons"
-import { useCart } from "../contexts/CartContext"
+} from "@chakra-ui/react";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { useCart } from "../contexts/CartContext";
 
 const Cart = ({ isOpen, onClose }) => {
-  const { cart, removeFromCart, updateQuantity } = useCart()
+  const { cart, removeFromCart, updateQuantity } = useCart();
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = async () => {
+    // Create an order on your server
+    const response = await fetch('/create-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount: total * 100 }), // Amount in paise
+    });
+
+    const orderData = await response.json();
+
+    // Initialize Razorpay payment
+    const options = {
+      key: "YOUR_RAZORPAY_KEY_ID", // Enter the Key ID generated from the Dashboard
+      amount: orderData.amount, // Amount in paise
+      currency: "INR",
+      name: "Your Company Name",
+      description: "Test Transaction",
+      order_id: orderData.id,
+      handler: function (response) {
+        alert("Payment successful!");
+        // Optionally clear the cart here
+        // clearCart();
+        onClose(); // Close the cart drawer
+      },
+      prefill: {
+        name: "Customer Name",
+        email: "customer@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const razorpayInstance = new window.Razorpay(options);
+    razorpayInstance.open();
+  };
 
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
@@ -67,15 +107,14 @@ const Cart = ({ isOpen, onClose }) => {
               <Text fontWeight="bold">Total:</Text>
               <Text fontWeight="bold">${total.toFixed(2)}</Text>
             </HStack>
-            <Button colorScheme="blue" width="100%">
+            <Button colorScheme="blue" width="100%" onClick={handleCheckout}>
               Checkout
             </Button>
           </VStack>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
-}
+  );
+};
 
-export default Cart
-
+export default Cart;
