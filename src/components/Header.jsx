@@ -29,6 +29,9 @@ const Header = ({ onCartOpen }) => {
           <Button as={Link} to="/shop" variant="ghost">
             Shop
           </Button>
+          <Button as={Link} to="/contactus" variant="ghost">
+            Contact Us
+          </Button>
           
           <Button variant="ghost" onClick={onCartOpen}>
             Cart ({cart.length})

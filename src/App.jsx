@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import Shop from "./pages/Shop";
 import Cart from "./components/Cart";
+import ContactUs from "./pages/ContactUs";
 
 import { CartProvider } from "./contexts/CartContext";
 import theme from "./theme";
@@ -27,6 +28,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/contactus" element={<ContactUs />} />
               </Routes>
             </Box>
             <Footer />
