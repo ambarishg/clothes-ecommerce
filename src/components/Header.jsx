@@ -5,6 +5,12 @@ import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { HamburgerIcon } from '@chakra-ui/icons';
 import MobileNav from './MobileNav'; // Import a new MobileNav component
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react';
 
 const Header = ({ onCartOpen }) => {
   const { cart } = useCart();
@@ -29,9 +35,16 @@ const Header = ({ onCartOpen }) => {
           <Button as={Link} to="/shop" variant="ghost">
             Shop
           </Button>
-          <Button as={Link} to="/contactus" variant="ghost">
-            Contact Us
-          </Button>
+          <Menu>
+            <MenuButton variant='ghost'>FAQ</MenuButton>
+            <MenuList>
+             
+              <MenuItem><Link to="/contactus">Contact Us</Link></MenuItem>
+              <MenuItem><Link to="/TermsAndConditions">Terms and Conditions</Link></MenuItem>
+              <MenuItem><Link to="/CancellationRefundPolicy">Cancellation and Refund Policy</Link></MenuItem>
+              
+            </MenuList>  
+          </Menu>
           
           <Button variant="ghost" onClick={onCartOpen}>
             Cart ({cart.length})

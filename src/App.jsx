@@ -11,6 +11,8 @@ import ContactUs from "./pages/ContactUs";
 
 import { CartProvider } from "./contexts/CartContext";
 import theme from "./theme";
+import TermsAndConditions from "./pages/TandC";
+import CancellationRefundPolicy from "./pages/Cancellation";
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/contactus" element={<ContactUs />} />
+                <Route path="/TermsAndConditions" element={<TermsAndConditions/>} />
+                <Route path="/CancellationRefundPolicy" element={<CancellationRefundPolicy />} />
               </Routes>
             </Box>
             <Footer />

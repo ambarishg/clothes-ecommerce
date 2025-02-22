@@ -7,8 +7,7 @@ import {
   Stack,
   useColorModeValue,
 } from '@chakra-ui/react';
-import TermsAndConditions from './TandC';
-import CancellationRefundPolicy from './Cancellation';
+
 
 const ContactUs = () => {
   // Use colorModeValue to adapt colors to light/dark mode
@@ -100,9 +99,6 @@ const ContactUs = () => {
                   Current date: Sunday, February 16, 2025, 5:08 PM IST
               </Text>
           </Stack>
-
-          <TermsAndConditions />
-          <CancellationRefundPolicy />
       </Box>
   );
 };
