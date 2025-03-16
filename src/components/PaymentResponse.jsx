@@ -83,33 +83,7 @@ function PaymentResponse() {
         Payment Status
       </Heading>
 
-      {isLoading ? (
-        <VStack spacing={4}>
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-          <Text>Verifying payment status...</Text>
-        </VStack>
-      ) : error ? (
-        <Alert status="error" variant="subtle" borderRadius="md">
-          <AlertIcon />
-          <Box>
-            <AlertTitle>Error verifying payment</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-            <Button
-              mt={3}
-              size="sm"
-              onClick={verifyPayment}
-            >
-              Retry Verification
-            </Button>
-          </Box>
-        </Alert>
-      ) : (
+
         <Alert
           status={getStatusColor()}
           variant="subtle"
@@ -131,7 +105,7 @@ function PaymentResponse() {
             </Text>
           </Box>
         </Alert>
-      )}
+    
     </Box>
   );
 }
