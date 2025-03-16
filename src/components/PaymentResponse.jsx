@@ -11,6 +11,7 @@ import {
   Button,
   VStack
 } from '@chakra-ui/react';
+import { useCart } from './contexts/CartContext'; // Import useCart hook
 
 /**
  * Component to display payment status after verification.
@@ -23,6 +24,9 @@ function PaymentResponse() {
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Get cart context
+  const { clearCart } = useCart();
 
   /**
    * Function to verify payment status by fetching data from the API.
@@ -49,6 +53,11 @@ function PaymentResponse() {
       setPaymentStatus(data.order_status);
       console.log("THE ORDER STATUS IS ----------------------");
       console.log(data.order_status);
+      
+      // Clear cart if payment is successful
+      if (data.order_status && data.order_status.toLowerCase().includes('paid')) {
+        clearCart();
+      }
       
     } catch (error) {
       setError(error.message);
@@ -82,12 +91,13 @@ function PaymentResponse() {
       <Heading as="h1" mb={6} textAlign="center">
         Payment Status
       </Heading>
-          <Box mt={4} mb={2}>
-            {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
-             <Text mt={4}>
-              Order ID: {orderId || 'Not available'}
-            </Text>
-          </Box>    
+        <Box mt={4} mb={2}>
+          {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
+          <Text mt={4}>
+            Order ID: {orderId || 'Not available'}
+          </Text>
+        </Box>
+      
     </Box>
   );
 }
