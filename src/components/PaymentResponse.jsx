@@ -39,6 +39,9 @@ function PaymentResponse() {
 
       const data = await response.json();
       setPaymentStatus(data.order_status);
+      console.log("THE ORDER STATUS IS ----------------------");
+      console.log(data.order_status);
+      
     } catch (error) {
       setError(error.message);
     } finally {
@@ -57,7 +60,7 @@ function PaymentResponse() {
 
   const getStatusColor = () => {
     if (!paymentStatus) return 'blue';
-    return paymentStatus.toLowerCase().includes('success') ? 'green' : 'red';
+    return paymentStatus.toLowerCase().includes('paid') ? 'green' : 'red';
   };
 
   return (
