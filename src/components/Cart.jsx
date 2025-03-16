@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Drawer,
   DrawerBody,
@@ -14,19 +15,33 @@ import {
   IconButton,
   Input,
   useToast,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { useCart } from "../contexts/CartContext";
 
 const Cart = ({ isOpen, onClose }) => {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCart();
   const toast = useToast();
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
+    if (!email || !phone) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide email and phone number",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
-      // Create Cashfree order through backend
       const response = await fetch('/create_cashfree_order', {
         method: 'POST',
         headers: {
@@ -34,8 +49,8 @@ const Cart = ({ isOpen, onClose }) => {
         },
         body: JSON.stringify({
           order_amount: total,
-          customer_email: "customer@example.com", // Get from user context
-          customer_phone: "9999999999" // Get from user context
+          customer_email: email,
+          customer_phone: phone
         }),
       });
 
@@ -44,11 +59,8 @@ const Cart = ({ isOpen, onClose }) => {
       }
 
       const data = await response.json();
-      
-      // Redirect to Cashfree payment page
       window.location.href = data.payment_link;
       onClose();
-
     } catch (error) {
       toast({
         title: "Payment Error",
@@ -108,6 +120,31 @@ const Cart = ({ isOpen, onClose }) => {
                 </Button>
               </HStack>
             ))}
+
+            {/* Customer Information Form */}
+            <VStack spacing={3} mt={4}>
+              <FormControl isRequired>
+                <FormLabel>Email Address</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>Phone Number</FormLabel>
+                <Input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your phone number"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                />
+              </FormControl>
+            </VStack>
           </VStack>
         </DrawerBody>
 
@@ -121,7 +158,7 @@ const Cart = ({ isOpen, onClose }) => {
               colorScheme="blue" 
               width="100%" 
               onClick={handleCheckout}
-              isLoading={false} // Add loading state if needed
+              isDisabled={!email || !phone}
             >
               Proceed to Payment
             </Button>

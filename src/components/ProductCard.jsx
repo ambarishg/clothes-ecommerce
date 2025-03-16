@@ -21,7 +21,7 @@ const ProductCard = ({ id, name, price, image }) => {
         <Text fontWeight="bold" fontSize="lg">
           {name}
         </Text>
-        <Text color="gray.600">${price.toFixed(2)}</Text>
+        <Text color="gray.600">₹{price.toFixed(2)}</Text>
         <Button colorScheme="blue" width="100%" onClick={handleAddToCart}>
           Add to Cart
         </Button>
