@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Drawer,
   DrawerBody,
@@ -14,53 +13,51 @@ import {
   Image,
   IconButton,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { useCart } from "../contexts/CartContext";
 
 const Cart = ({ isOpen, onClose }) => {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const toast = useToast();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    // Create an order on your server
-    const response = await fetch('/create-order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ amount: total * 100 }), // Amount in paise
-    });
+    try {
+      // Create Cashfree order through backend
+      const response = await fetch('/create_cashfree_order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_amount: total,
+          customer_email: "customer@example.com", // Get from user context
+          customer_phone: "9999999999" // Get from user context
+        }),
+      });
 
-    const orderData = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to create payment order');
+      }
 
-    // Initialize Razorpay payment
-    const options = {
-      key: "YOUR_RAZORPAY_KEY_ID", // Enter the Key ID generated from the Dashboard
-      amount: orderData.amount, // Amount in paise
-      currency: "INR",
-      name: "Your Company Name",
-      description: "Test Transaction",
-      order_id: orderData.id,
-      handler: function (response) {
-        alert("Payment successful!");
-        // Optionally clear the cart here
-        // clearCart();
-        onClose(); // Close the cart drawer
-      },
-      prefill: {
-        name: "Customer Name",
-        email: "customer@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
+      const data = await response.json();
+      
+      // Redirect to Cashfree payment page
+      window.location.href = data.payment_link;
+      onClose();
 
-    const razorpayInstance = new window.Razorpay(options);
-    razorpayInstance.open();
+    } catch (error) {
+      toast({
+        title: "Payment Error",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -74,10 +71,15 @@ const Cart = ({ isOpen, onClose }) => {
           <VStack spacing={4} align="stretch">
             {cart.map((item) => (
               <HStack key={item.id} justify="space-between">
-                <Image src={item.image || "/placeholder.svg"} alt={item.name} boxSize="50px" objectFit="cover" />
+                <Image 
+                  src={item.image || "/placeholder.svg"} 
+                  alt={item.name} 
+                  boxSize="50px" 
+                  objectFit="cover" 
+                />
                 <VStack align="start" flex={1}>
                   <Text fontWeight="bold">{item.name}</Text>
-                  <Text>${item.price.toFixed(2)}</Text>
+                  <Text>₹{item.price.toFixed(2)}</Text>
                 </VStack>
                 <HStack>
                   <IconButton
@@ -91,9 +93,17 @@ const Cart = ({ isOpen, onClose }) => {
                     width="50px"
                     textAlign="center"
                   />
-                  <IconButton icon={<AddIcon />} onClick={() => updateQuantity(item.id, item.quantity + 1)} size="sm" />
+                  <IconButton 
+                    icon={<AddIcon />} 
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)} 
+                    size="sm" 
+                  />
                 </HStack>
-                <Button onClick={() => removeFromCart(item.id)} colorScheme="red" size="sm">
+                <Button 
+                  onClick={() => removeFromCart(item.id)} 
+                  colorScheme="red" 
+                  size="sm"
+                >
                   Remove
                 </Button>
               </HStack>
@@ -105,10 +115,15 @@ const Cart = ({ isOpen, onClose }) => {
           <VStack width="100%" align="stretch">
             <HStack justify="space-between">
               <Text fontWeight="bold">Total:</Text>
-              <Text fontWeight="bold">${total.toFixed(2)}</Text>
+              <Text fontWeight="bold">₹{total.toFixed(2)}</Text>
             </HStack>
-            <Button colorScheme="blue" width="100%" onClick={handleCheckout}>
-              Checkout
+            <Button 
+              colorScheme="blue" 
+              width="100%" 
+              onClick={handleCheckout}
+              isLoading={false} // Add loading state if needed
+            >
+              Proceed to Payment
             </Button>
           </VStack>
         </DrawerFooter>
