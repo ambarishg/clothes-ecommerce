@@ -15,7 +15,7 @@ import {
 
 function PaymentResponse() {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get('order_id');
+  const orderId = sessionStorage.getItem("order_id");
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

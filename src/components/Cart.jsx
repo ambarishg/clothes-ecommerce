@@ -69,12 +69,13 @@ const Cart = ({ isOpen, onClose }) => {
       }
 
       const data = await response.json();
+      sessionStorage.setItem("order_id",data.order_id);
       let checkoutOptions = {
         paymentSessionId: data.payment_session_id,
         redirectTarget: "_self",
       };
       cashfree.checkout(checkoutOptions);
-      
+
     } catch (error) {
       toast({
         title: "Payment Error",
