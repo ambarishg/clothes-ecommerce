@@ -80,19 +80,53 @@ function PaymentResponse() {
   };
 
   return (
-    <Box p={8} maxW="600px" mx="auto">
-      <Heading as="h1" mb={6} textAlign="center">
+    <Box
+      p={8}
+      maxW="600px"
+      mx="auto"
+      bg="white"
+      borderRadius="lg"
+      boxShadow="md"
+      py={6}
+    >
+      <Heading as="h1" mb={6} textAlign="center" fontSize="xl" fontWeight="bold">
         Payment Status
       </Heading>
-        <Box mt={4} mb={2}>
-          {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
-          <Text mt={4}>
-            Order ID: {orderId || 'Not available'}
-          </Text>
-        </Box>
-      
+  
+      <Box mt={4} mb={2} textAlign="center">
+        {paymentStatus && paymentStatus.includes('PAID') ? (
+          <Box
+            bg="green.100"
+            p={4}
+            borderRadius="md"
+            color="green.500"
+          >
+            <Text fontSize="xl" fontWeight="bold">
+              Payment Successful!
+            </Text>
+            <Text mt={4} fontSize="sm" opacity={0.8}>
+              Order ID: {orderId || 'Not available'}
+            </Text>
+          </Box>
+        ) : (
+          <Box
+            bg="red.100"
+            p={4}
+            borderRadius="md"
+            color="red.500"
+          >
+            <Text fontSize="xl" fontWeight="bold">
+              Payment Issue Detected
+            </Text>
+            <Text mt={4} fontSize="sm" opacity={0.8}>
+              Order ID: {orderId || 'Not available'}
+            </Text>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
+  
 }
 
 export default PaymentResponse;
