@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import {
   Box,
   Heading,
@@ -14,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 function PaymentResponse() {
-  const [searchParams] = useSearchParams();
+  
   const orderId = sessionStorage.getItem("order_id");
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,17 +28,17 @@ function PaymentResponse() {
         throw new Error('No order ID found in the URL');
       }
 
-    //   const response = await fetch(
-    //     `http://localhost:8000/payment_response?order_id=${orderId}`
-    //   );
+      const response = await fetch(
+        `https://paymentwb.azurewebsites.net/api/order_status_verification?order_id=${orderId}`
+      );
 
-    //   if (!response.ok) {
-    //     const errorData = await response.json();
-    //     throw new Error(errorData.detail || 'Payment verification failed');
-    //   }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Payment verification failed');
+      }
 
-    //   const data = await response.json();
-    //   setPaymentStatus(data.message);
+      const data = await response.json();
+      setPaymentStatus(data.order_status);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -106,7 +105,7 @@ function PaymentResponse() {
           <AlertIcon boxSize="40px" mr={0} />
           <Box mt={4} mb={2}>
             <AlertTitle fontSize="xl">
-              {paymentStatus.includes('success') ? 'Payment Successful!' : 'Payment Issue Detected'}
+              {paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
             </AlertTitle>
             <AlertDescription maxW="sm" mt={2}>
               {paymentStatus}
