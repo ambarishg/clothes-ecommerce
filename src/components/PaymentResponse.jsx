@@ -88,7 +88,6 @@ function PaymentResponse() {
             <AlertDescription>{error}</AlertDescription>
             <Button
               mt={3}
-              colorScheme="red"
               size="sm"
               onClick={verifyPayment}
             >
