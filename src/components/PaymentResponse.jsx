@@ -3,15 +3,8 @@ import {
   Box,
   Heading,
   Text,
-  Spinner,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Button,
-  VStack
 } from '@chakra-ui/react';
-import { useCart } from './contexts/CartContext'; // Import useCart hook
+import { useCart } from "../contexts/CartContext";
 
 /**
  * Component to display payment status after verification.
