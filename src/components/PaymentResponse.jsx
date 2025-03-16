@@ -82,30 +82,12 @@ function PaymentResponse() {
       <Heading as="h1" mb={6} textAlign="center">
         Payment Status
       </Heading>
-
-
-        <Alert
-          status={getStatusColor()}
-          variant="subtle"
-          borderRadius="md"
-          flexDirection="column"
-          alignItems="center"
-          textAlign="center"
-        >
-          <AlertIcon boxSize="40px" mr={0} />
           <Box mt={4} mb={2}>
-            
-              {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
-            
-            
-              {paymentStatus || 'Unknown status'}
-           
-            <Text mt={4}>
+            {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
+             <Text mt={4}>
               Order ID: {orderId || 'Not available'}
             </Text>
-          </Box>
-        </Alert>
-    
+          </Box>    
     </Box>
   );
 }
