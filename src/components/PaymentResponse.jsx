@@ -94,13 +94,13 @@ function PaymentResponse() {
         >
           <AlertIcon boxSize="40px" mr={0} />
           <Box mt={4} mb={2}>
-            <AlertTitle fontSize="xl">
+            
               {paymentStatus && paymentStatus.includes('PAID') ? 'Payment Successful!' : 'Payment Issue Detected'}
-            </AlertTitle>
-            <AlertDescription maxW="sm" mt={2}>
+            
+            
               {paymentStatus || 'Unknown status'}
-            </AlertDescription>
-            <Text mt={4} fontSize="sm" opacity={0.8}>
+           
+            <Text mt={4}>
               Order ID: {orderId || 'Not available'}
             </Text>
           </Box>
