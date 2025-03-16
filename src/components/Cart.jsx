@@ -20,12 +20,22 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { useCart } from "../contexts/CartContext";
+import { load } from "@cashfreepayments/cashfree-js";
 
 const Cart = ({ isOpen, onClose }) => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const toast = useToast();
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+ 
+  
+  let cashfree;
+  var initializeSDK = async function () {
+    cashfree = await load({
+      mode: "sandbox",
+    });
+  };
+  initializeSDK();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -42,7 +52,7 @@ const Cart = ({ isOpen, onClose }) => {
     }
 
     try {
-      const response = await fetch('https://paymentmisron.azurewebsites.net/api/create_cashfree_order', {
+      const response = await fetch('https://paymentwb.azurewebsites.net/api/create_cashfree_order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,8 +69,12 @@ const Cart = ({ isOpen, onClose }) => {
       }
 
       const data = await response.json();
-      window.location.href = data.payment_link;
-      onClose();
+      let checkoutOptions = {
+        paymentSessionId: data.payment_session_id,
+        redirectTarget: "_self",
+      };
+      cashfree.checkout(checkoutOptions);
+      
     } catch (error) {
       toast({
         title: "Payment Error",
