@@ -13,6 +13,7 @@ import { CartProvider } from "./contexts/CartContext";
 import theme from "./theme";
 import TermsAndConditions from "./pages/TandC";
 import CancellationRefundPolicy from "./pages/Cancellation";
+import PaymentResponse from "./components/PaymentResponse";
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/contactus" element={<ContactUs />} />
                 <Route path="/TermsAndConditions" element={<TermsAndConditions/>} />
                 <Route path="/CancellationRefundPolicy" element={<CancellationRefundPolicy />} />
+                <Route path="/paymentresponse" element={<PaymentResponse />} />
               </Routes>
             </Box>
             <Footer />

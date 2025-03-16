@@ -42,7 +42,7 @@ const Cart = ({ isOpen, onClose }) => {
     }
 
     try {
-      const response = await fetch('/create_cashfree_order', {
+      const response = await fetch('https://paymentmisron.azurewebsites.net/create_cashfree_order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
