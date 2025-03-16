@@ -92,11 +92,12 @@ function PaymentResponse() {
       <Heading as="h1" mb={6} textAlign="center" fontSize="xl" fontWeight="bold">
         Payment Status
       </Heading>
+
   
-      <Box mt={4} mb={2} textAlign="center">
+      <Box mt={4} mb={4} textAlign="center">
         {paymentStatus && paymentStatus.includes('PAID') ? (
           <Box
-            bg="green.100"
+            
             p={4}
             borderRadius="md"
             color="green.500"
@@ -110,7 +111,7 @@ function PaymentResponse() {
           </Box>
         ) : (
           <Box
-            bg="red.100"
+            
             p={4}
             borderRadius="md"
             color="red.500"
