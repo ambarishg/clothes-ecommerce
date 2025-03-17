@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 const Header = ({ onCartOpen }) => {
-  const { cart } = useCart();
+  const { cart ,getItemCount } = useCart();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -47,7 +47,7 @@ const Header = ({ onCartOpen }) => {
           </Menu>
           
           <Button variant="ghost" onClick={onCartOpen}>
-            Cart ({cart.length})
+            Cart ({ getItemCount()})
           </Button>
         </Flex>
       </Flex>

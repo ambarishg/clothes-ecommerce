@@ -9,6 +9,7 @@ import {
   GridItem,
   Badge,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { useCart } from "../contexts/CartContext";
 
@@ -25,9 +26,13 @@ function PaymentResponse() {
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
   const [savedCartDetails, setSavedCartDetails] = useState(null);
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
 
   // Get cart context
   const { saveCartAndClear, getCartDetails, getSavedCart } = useCart();
+  
+  // Toast for notifications
+  const toast = useToast();
 
   // Get the savedCart on component mount or when it changes
   useEffect(() => {
@@ -40,6 +45,51 @@ function PaymentResponse() {
       console.error("Error getting saved cart details:", cartError);
     }
   }, [getSavedCart]);
+
+  /**
+   * Function to send order details to REST API
+   */
+  const submitOrderToAPI = async (orderData) => {
+    try {
+      const response = await fetch('https://api.example.com/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit order details');
+      }
+
+      const result = await response.json();
+      console.log('Order submitted successfully:', result);
+      setOrderSubmitted(true);
+      
+      toast({
+        title: 'Order submitted',
+        description: 'Your order details have been successfully recorded.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      
+      toast({
+        title: 'Order submission failed',
+        description: 'Your payment was successful, but we had trouble recording your order details. Please contact customer support.',
+        status: 'warning',
+        duration: 8000,
+        isClosable: true,
+      });
+      
+      throw error;
+    }
+  };
 
   /**
    * Function to verify payment status by fetching data from the API.
@@ -75,6 +125,22 @@ function PaymentResponse() {
         setSavedCartDetails(currentCartDetails);
         // Then call saveCartAndClear
         saveCartAndClear();
+        
+        // Submit order details to API
+        try {
+          const orderData = {
+            orderId: orderId,
+            paymentStatus: data.order_status,
+            cartDetails: currentCartDetails,
+            orderDate: new Date().toISOString(),
+            // Add any additional information you want to send
+          };
+          
+          await submitOrderToAPI(orderData);
+        } catch (apiError) {
+          console.error("Error submitting order to API:", apiError);
+          // We don't set the main error state here because payment was still successful
+        }
       }
       
     } catch (error) {
@@ -156,6 +222,11 @@ function PaymentResponse() {
                 <Text>{formatDate()}</Text>
               </Box>
             </Flex>
+            {orderSubmitted && (
+              <Badge colorScheme="blue" mt={2}>
+                Order details recorded
+              </Badge>
+            )}
           </Box>
 
           {/* Display order details only if payment is successful */}
@@ -227,6 +298,7 @@ function PaymentResponse() {
                   Thank you for your purchase
                 </Heading>
                 <Text fontSize="sm" color={textColor}>
+                  A confirmation email has been sent to your registered email address.
                   If you have any questions about your order, please contact our customer service.
                 </Text>
               </Box>
