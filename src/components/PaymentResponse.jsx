@@ -41,15 +41,7 @@ function PaymentResponse() {
         throw new Error('No order ID found in session storage');
       }
 
-      // Save cart details before any potential clearing
-      try {
-        const cartData = getSavedCart();
-        setSavedCartDetails(cartData);
-
-        console.log(cartData);
-      } catch (cartError) {
-        console.error("Error getting cart details:", cartError);
-      }
+      
 
       const response = await fetch(
         `https://paymentwb.azurewebsites.net/api/order_status_verification?order_id=${orderId}`
@@ -67,6 +59,16 @@ function PaymentResponse() {
       // Clear cart if payment is successful
       if (data.order_status && data.order_status.toLowerCase().includes('paid')) {
         saveCartAndClear();
+      }
+
+      
+      try {
+        const cartData = getSavedCart();
+        setSavedCartDetails(cartData);
+
+        console.log(cartData);
+      } catch (cartError) {
+        console.error("Error getting cart details:", cartError);
       }
       
     } catch (error) {
