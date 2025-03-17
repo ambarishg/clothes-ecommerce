@@ -24,12 +24,10 @@ function PaymentResponse() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [savedCartDetails, setSavedCartDetails] = useState(null);
 
   // Get cart context
   const { clearCart, getCartDetails } = useCart();
-
-  // Get cart details
-  const cartDetails = getCartDetails();
 
   /**
    * Function to verify payment status by fetching data from the API.
@@ -41,6 +39,14 @@ function PaymentResponse() {
       
       if (!orderId) {
         throw new Error('No order ID found in session storage');
+      }
+
+      // Save cart details before any potential clearing
+      try {
+        const cartData = getCartDetails();
+        setSavedCartDetails(cartData);
+      } catch (cartError) {
+        console.error("Error getting cart details:", cartError);
       }
 
       const response = await fetch(
@@ -55,16 +61,9 @@ function PaymentResponse() {
       const data = await response.json();
       setPaymentStatus(data.order_status);
       setOrderDetails(data);
-      console.log("THE ORDER STATUS IS ----------------------");
-      console.log(data.order_status);
       
       // Clear cart if payment is successful
       if (data.order_status && data.order_status.toLowerCase().includes('paid')) {
-        // Save cart details to state before clearing
-        setOrderDetails(prev => ({
-          ...prev,
-          cartDetails: cartDetails
-        }));
         clearCart();
       }
       
@@ -85,15 +84,7 @@ function PaymentResponse() {
       setError('No order ID found in session storage');
       setIsLoading(false);
     }
-  }, [orderId]);
-
-  /**
-   * Function to determine status color based on payment status.
-   */
-  const getStatusColor = () => {
-    if (!paymentStatus) return 'blue';
-    return paymentStatus.toLowerCase().includes('paid') ? 'green' : 'red';
-  };
+  }, []);  // Remove orderId dependency to prevent re-renders
 
   // Background colors
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -158,7 +149,7 @@ function PaymentResponse() {
           </Box>
 
           {/* Display order details only if payment is successful */}
-          {paymentStatus && paymentStatus.includes('PAID') && orderDetails && orderDetails.cartDetails && (
+          {paymentStatus && paymentStatus.includes('PAID') && savedCartDetails && (
             <>
               <Heading as="h2" size="md" mb={4}>
                 Order Summary
@@ -174,27 +165,31 @@ function PaymentResponse() {
                 
                 <Divider mb={4} />
                 
-                {orderDetails.cartDetails.items.map((item) => (
-                  <Grid key={item.id} templateColumns="repeat(12, 1fr)" gap={4} mb={3}>
-                    <GridItem colSpan={6}>
-                      <Text fontWeight="medium">{item.name}</Text>
-                      {item.description && (
-                        <Text fontSize="sm" color={textColor} noOfLines={1}>
-                          {item.description}
-                        </Text>
-                      )}
-                    </GridItem>
-                    <GridItem colSpan={2} textAlign="center">
-                      {item.quantity}
-                    </GridItem>
-                    <GridItem colSpan={2} textAlign="right">
-                      ${item.price.toFixed(2)}
-                    </GridItem>
-                    <GridItem colSpan={2} textAlign="right">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </GridItem>
-                  </Grid>
-                ))}
+                {savedCartDetails.items.length > 0 ? (
+                  savedCartDetails.items.map((item) => (
+                    <Grid key={item.id} templateColumns="repeat(12, 1fr)" gap={4} mb={3}>
+                      <GridItem colSpan={6}>
+                        <Text fontWeight="medium">{item.name || 'Product'}</Text>
+                        {item.description && (
+                          <Text fontSize="sm" color={textColor} noOfLines={1}>
+                            {item.description}
+                          </Text>
+                        )}
+                      </GridItem>
+                      <GridItem colSpan={2} textAlign="center">
+                        {item.quantity}
+                      </GridItem>
+                      <GridItem colSpan={2} textAlign="right">
+                        ${(item.price || 0).toFixed(2)}
+                      </GridItem>
+                      <GridItem colSpan={2} textAlign="right">
+                        ${((item.price || 0) * item.quantity).toFixed(2)}
+                      </GridItem>
+                    </Grid>
+                  ))
+                ) : (
+                  <Text textAlign="center">No items in order</Text>
+                )}
                 
                 <Divider my={4} />
                 
@@ -203,7 +198,7 @@ function PaymentResponse() {
                     Subtotal:
                   </GridItem>
                   <GridItem colSpan={4} textAlign="right">
-                    ${orderDetails.cartDetails.subtotal.toFixed(2)}
+                    ${(savedCartDetails.subtotal || 0).toFixed(2)}
                   </GridItem>
                 </Grid>
                 
@@ -212,7 +207,7 @@ function PaymentResponse() {
                     Total Items:
                   </GridItem>
                   <GridItem colSpan={4} textAlign="right">
-                    {orderDetails.cartDetails.itemCount}
+                    {savedCartDetails.itemCount || 0}
                   </GridItem>
                 </Grid>
               </Box>
