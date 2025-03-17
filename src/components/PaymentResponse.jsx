@@ -298,7 +298,6 @@ function PaymentResponse() {
                   Thank you for your purchase
                 </Heading>
                 <Text fontSize="sm" color={textColor}>
-                  A confirmation email has been sent to your registered email address.
                   If you have any questions about your order, please contact our customer service.
                 </Text>
               </Box>
