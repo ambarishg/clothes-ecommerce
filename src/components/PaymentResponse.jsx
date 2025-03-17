@@ -127,7 +127,7 @@ function PaymentResponse() {
         saveCartAndClear();
         
         // Submit order details to API
-        try {
+        /* try {
           const orderData = {
             orderId: orderId,
             paymentStatus: data.order_status,
@@ -140,7 +140,7 @@ function PaymentResponse() {
         } catch (apiError) {
           console.error("Error submitting order to API:", apiError);
           // We don't set the main error state here because payment was still successful
-        }
+        } */
       }
       
     } catch (error) {
