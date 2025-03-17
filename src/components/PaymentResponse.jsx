@@ -45,6 +45,8 @@ function PaymentResponse() {
       try {
         const cartData = getSavedCart();
         setSavedCartDetails(cartData);
+
+        console.log(cartData);
       } catch (cartError) {
         console.error("Error getting cart details:", cartError);
       }
