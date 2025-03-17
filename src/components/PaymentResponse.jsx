@@ -29,6 +29,18 @@ function PaymentResponse() {
   // Get cart context
   const { saveCartAndClear, getCartDetails, getSavedCart } = useCart();
 
+  // Get the savedCart on component mount or when it changes
+  useEffect(() => {
+    try {
+      const cartData = getSavedCart();
+      if (cartData) {
+        setSavedCartDetails(cartData);
+      }
+    } catch (cartError) {
+      console.error("Error getting saved cart details:", cartError);
+    }
+  }, [getSavedCart]);
+
   /**
    * Function to verify payment status by fetching data from the API.
    */
@@ -41,7 +53,8 @@ function PaymentResponse() {
         throw new Error('No order ID found in session storage');
       }
 
-      
+      // Get cart details before making the API call
+      const currentCartDetails = getCartDetails();
 
       const response = await fetch(
         `https://paymentwb.azurewebsites.net/api/order_status_verification?order_id=${orderId}`
@@ -56,19 +69,12 @@ function PaymentResponse() {
       setPaymentStatus(data.order_status);
       setOrderDetails(data);
       
-      // Clear cart if payment is successful
+      // Clear cart if payment is successful and save current cart details
       if (data.order_status && data.order_status.toLowerCase().includes('paid')) {
+        // First save the current cart details to state
+        setSavedCartDetails(currentCartDetails);
+        // Then call saveCartAndClear
         saveCartAndClear();
-      }
-
-      
-      try {
-        const cartData = getSavedCart();
-        setSavedCartDetails(cartData);
-
-        console.log(cartData);
-      } catch (cartError) {
-        console.error("Error getting cart details:", cartError);
       }
       
     } catch (error) {
@@ -88,7 +94,7 @@ function PaymentResponse() {
       setError('No order ID found in session storage');
       setIsLoading(false);
     }
-  }, []);  // Remove orderId dependency to prevent re-renders
+  }, []);  // Empty dependency array to run only once
 
   // Background colors
   const bgColor = useColorModeValue('white', 'gray.800');
@@ -169,7 +175,7 @@ function PaymentResponse() {
                 
                 <Divider mb={4} />
                 
-                {savedCartDetails.items.length > 0 ? (
+                {savedCartDetails.items && savedCartDetails.items.length > 0 ? (
                   savedCartDetails.items.map((item) => (
                     <Grid key={item.id} templateColumns="repeat(12, 1fr)" gap={4} mb={3}>
                       <GridItem colSpan={6}>
@@ -221,7 +227,6 @@ function PaymentResponse() {
                   Thank you for your purchase
                 </Heading>
                 <Text fontSize="sm" color={textColor}>
-                  A confirmation email has been sent to your registered email address.
                   If you have any questions about your order, please contact our customer service.
                 </Text>
               </Box>
