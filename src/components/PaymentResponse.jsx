@@ -27,7 +27,7 @@ function PaymentResponse() {
   const [savedCartDetails, setSavedCartDetails] = useState(null);
 
   // Get cart context
-  const { clearCart, getCartDetails, getSavedCart } = useCart();
+  const { saveCartAndClear, getCartDetails, getSavedCart } = useCart();
 
   /**
    * Function to verify payment status by fetching data from the API.
@@ -66,7 +66,7 @@ function PaymentResponse() {
       
       // Clear cart if payment is successful
       if (data.order_status && data.order_status.toLowerCase().includes('paid')) {
-        clearCart();
+        saveCartAndClear();
       }
       
     } catch (error) {
