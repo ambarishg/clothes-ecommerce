@@ -27,7 +27,7 @@ function PaymentResponse() {
   const [savedCartDetails, setSavedCartDetails] = useState(null);
 
   // Get cart context
-  const { clearCart, getCartDetails } = useCart();
+  const { clearCart, getCartDetails, getSavedCart } = useCart();
 
   /**
    * Function to verify payment status by fetching data from the API.
@@ -43,7 +43,7 @@ function PaymentResponse() {
 
       // Save cart details before any potential clearing
       try {
-        const cartData = getCartDetails();
+        const cartData = getSavedCart();
         setSavedCartDetails(cartData);
       } catch (cartError) {
         console.error("Error getting cart details:", cartError);
